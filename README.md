@@ -1,2 +1,3 @@
 # AndroidStudioProjects
-A repository for the apps that I will make
+A repository for the android apps that I will make..
+Feel free to make any pull requests you see fit :)
