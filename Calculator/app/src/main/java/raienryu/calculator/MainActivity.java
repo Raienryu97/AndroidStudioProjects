@@ -3,11 +3,9 @@ package raienryu.calculator;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.lang.System;
@@ -18,8 +16,12 @@ public class MainActivity extends AppCompatActivity {
     EditText e1,e2,op,res;
     private long startTime;
     private boolean secondBack=false;
+    /*
+    **The following booleans when true allow either the
+    **first operand or the second operand to be entered
+    **Both will not be true at the same time
+     */
     private boolean op1=true;
-    private boolean neg=false;
     private boolean op2=false;
 
     @Override
@@ -150,6 +152,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 op.setText("+");
+                /*
+                **After setting an operator, if the first operand is
+                **non empty, then make way for the second operand to
+                **be entered in. Else keep stuff the default way
+                 */
                 if(!e1.getText().toString().contentEquals("")) {
                     op1 = false;
                     op2 = true;
@@ -159,6 +166,17 @@ public class MainActivity extends AppCompatActivity {
         sub.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //tl;dr : allow expressions like -2 + 3 or -2 * -3 to be calculated
+                /*
+                **The following cases allow us to give inputs in
+                **negative form. If the first operand is empty and
+                **the user keys in this button, then we use this click
+                **as one that specifies sign and not as an operator.
+                **If first operand is already keyed in, then  just use
+                **this click to specify the operator. If operand 2 is
+                **ready to be keyed in, and this button was clicked
+                **while it is empty, then give it as a sign.
+                 */
                 if(op1 && e1.getText().toString().contentEquals("") )
                 e1.append("-");
                 else if(!op2){
@@ -166,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
                     op1=false;
                     op2=true;
                 }
-                else if(op2 && e2.getText().toString().contentEquals(""))
+                else if(e2.getText().toString().contentEquals("") && op2)
                 e2.append("-");
             }
         });
@@ -193,6 +211,7 @@ public class MainActivity extends AppCompatActivity {
         clc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Check if user is trying to clear empty stuff
                 if(e1.getText().toString().contentEquals("") && e2.getText().toString()
                         .contentEquals("") && op.getText().toString().contentEquals(""))
                 Snackbar.make(v,"LOL , what you trying to clear?",Snackbar.LENGTH_SHORT).show();
@@ -211,6 +230,11 @@ public class MainActivity extends AppCompatActivity {
                     calculate();
                 }
                 catch (StringIndexOutOfBoundsException|NumberFormatException e){
+                    /*
+                    **There are some geniuses out there who would like to press the
+                    ** "=" button without even giving any inputs or some people
+                    **who won't give complete inputs. Address those people.
+                     */
                     Snackbar.make(v,"Yeah right! Like that's even gonna work",Snackbar.LENGTH_SHORT)
                             .show();
                 }
@@ -252,6 +276,12 @@ public class MainActivity extends AppCompatActivity {
             c=a*b;
         if(operator == '/')
             c=a/b;
+        /*
+        **Some people just want to watch the world burn, they think
+        **division by zero will make this Application force close. No
+        **it doesn't force close, just shows infinity, but that would just
+        **be boring. So replace it with an emoji, cause ThugLife.....
+         */
         if(Float.isInfinite(c)) {
             res.setTextSize(20);
             res.setText(smartass);
